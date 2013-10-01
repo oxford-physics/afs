@@ -1,0 +1,42 @@
+10
+
+dir
+0
+http://scm.physics.ox.ac.uk/svn/ppunix/trunk/puppet/test/modules/afs/templates
+http://scm.physics.ox.ac.uk/svn/ppunix
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6db089c4-495f-4545-93c7-f9a573b196b9
+
+afs.conf.client.erb
+file
+
+
+
+add
+
+cellservdb.erb
+file
+
+
+
+add
+
