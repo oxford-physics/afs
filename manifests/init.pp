@@ -92,7 +92,7 @@ class afs::client {
 			default	=> "afs"
 		},
 		ensure => running,
-        enable => true,
+                enable => true,
 		pattern	=> afsd,
 		hasstatus	=> $operatingsystem ? {
 			Ubuntu	=> false,
