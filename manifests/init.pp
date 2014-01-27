@@ -1,8 +1,16 @@
 #Source https://projects.linux.duke.edu/puppet/browser/modules/afs/
-class afs::client {
+class afs::client( $enableclient=$afs::params::enableclient  ) inherits afs::params {
+   if ( $enableclient  )
+   {
+       class {"afs::client::do":}
+
+   }
+}
+class afs::client::do () 
+{
 
     ## Packages Needed
-
+       
 	case $operatingsystem {
 		/centos|CentOS|redhat|RedHat|Redhat/: {
     		package { "openafs":
@@ -25,14 +33,20 @@ class afs::client {
 	        	}
 		}
         /scientific|Scientific/: {
+
             package{"openafs-client":
+                ensure  => present
+            }
+
+            package {"openafs-krb5":
                 ensure  => present;
             }
+
 
             file{"/usr/vice/etc/CellAlias":
                 owner   => root, group  => root, mode   => 644,
                 content => "cern.ch acpub\n",
-                require => Package["openafs-client"],
+                require => Package["openafs-client", "openafs-krb5"],
                 before  => Service["afs"]
             }
 
