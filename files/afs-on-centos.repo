@@ -1,0 +1,33 @@
+[sl]
+
+name=Base Enterprise Linux Scientific  - x86_64
+baseurl=http://pplxconfig2.physics.ox.ac.uk/mirrors/6/x86_64/os
+#mirrorlist=http://ftp.scientificlinux.org/linux/scientific/mirrorlist/sl-base-6.txt
+enabled=1
+gpgcheck=0
+priority=5
+protect=0
+includepkgs=*afs*
+
+[sl-security]
+name=Base Enterprise Linux Security Scientific  - x86_64
+#baseurl=http://pplxconfig2.physics.ox.ac.uk/mirrors/6/x86_64/updates/security
+mirrorlist=http://ftp.scientificlinux.org/linux/scientific/mirrorlist/sl-security-6.txt
+enabled=1
+gpgcheck=0
+priority=5
+protect=0
+includepkgs=*afs*
+
+
+baseurl=http://pplxconfig2.physics.ox.ac.uk/mirrors/6/x86_64/updates/security
+[sl-source]
+name=Scientific Linux $releasever - Source
+baseurl=http://ftp.scientificlinux.org/linux/scientific/$releasever/SRPMS/
+                http://ftp1.scientificlinux.org/linux/scientific/$releasever/SRPMS/
+                http://ftp2.scientificlinux.org/linux/scientific/$releasever/SRPMS/
+                ftp://ftp.scientificlinux.org/linux/scientific/$releasever/SRPMS/
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl6 file:///etc/pki/rpm-gpg/RPM-GPG-KEY-cern
+

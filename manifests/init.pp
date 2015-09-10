@@ -12,7 +12,10 @@ class afs::client::do ()
     ## Packages Needed
        
 	case $operatingsystem {
+ # TODO get afs on CentOS like the lines below
 		/centos|CentOS|redhat|RedHat|Redhat/: {
+                }
+                /centosfixed/: {
     		package { "openafs":
 				ensure => present;
     		}
@@ -26,7 +29,7 @@ class afs::client::do ()
 	        file { "/etc/openafs/afs.conf.client":
 		        owner   => root,
 		        group   => root,
-		        mode    => 644,
+		        mode    => 0644,
 		        content => template("afs/afs.conf.client.erb"),
 	                before  => Service["afs"],
 		        require	=> Package["openafs-client"]
@@ -44,7 +47,7 @@ class afs::client::do ()
 
 
             file{"/usr/vice/etc/CellAlias":
-                owner   => root, group  => root, mode   => 644,
+                owner   => root, group  => root, mode   => 0644,
                 content => "cern.ch acpub\n",
                 require => Package["openafs-client", "openafs-krb5"],
                 before  => Service["afs"]
@@ -58,10 +61,16 @@ class afs::client::do ()
 		}
 	}
 
+#TODO This block should not have an overrarching OS dependency, its only there to stop afs running when it doesnt work on centos
+ case $operatingsystem {
+ /centos|CentOS|redhat|RedHat|Redhat/: { }
+ /scientific|Scientific/: {
+
+
 	file { "ThisCell":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => 0644,
 		content => "cern.ch",
         path    => $operatingsystem ? {
             /scientific|Scientific/ => "/usr/vice/etc/ThisCell",
@@ -78,7 +87,7 @@ class afs::client::do ()
 	file { "CellServDB":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => 0644,
 		content => template("afs/cellservdb.erb"),
         path    => $operatingsystem ? {
             /scientific|Scientific/ => "/usr/vice/etc/CellServDB",
@@ -94,7 +103,7 @@ class afs::client::do ()
                         source => "puppet:///modules/$module_name/cacheinfo",
                         owner   => root,
                         group   => root,
-                        mode    => 644,
+                        mode    => 0644,
                         before =>Service["afs"],
                         require => Package["openafs-client"]
                  
@@ -113,7 +122,8 @@ class afs::client::do ()
 			default	=> true
 		}
     }
-
+ }#sl
+ }#os
 }
 
 class afs::volume-server {
@@ -172,49 +182,49 @@ class afs::volume-server {
 
     file{["/var/openafs", "/var/openafs/logs"]:
         ensure  => directory,
-        owner   => root, group  => root, mode   => 700
+        owner   => root, group  => root, mode   => 0700
     }
 
     file{"/etc/openafs/server":
         ensure  => directory,
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     ## Misc files
     file{"/etc/openafs/server/UserList":
         source  => "puppet:///afs-volserver/UserList",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => File["/etc/openafs/server"]
     }
 
     file{"/etc/openafs/server/KeyFile":
         source  => "puppet:///afs-volserver/KeyFile",
-        owner   => root, group  => root, mode   => 600,
+        owner   => root, group  => root, mode   => 0600,
         require => File["/etc/openafs/server"]
     }
 
     file{"/etc/openafs/server/ThisCell":
         content => "cern.ch\n",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => File["/etc/openafs/server"]
     }
 
     file{"/etc/openafs/BosConfig":
         source  => "puppet:///afs-volserver/BosConfig",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/CellServDB":
         source  => "puppet:///afs-volserver/CellServDB",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/sysconfig/afs":
         source  => "puppet:///afs-volserver/afs-sysconfig",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
@@ -228,43 +238,43 @@ class afs::volume-server {
             "puppet:///private_files/init_vicepartitions.sh",
             "puppet:///afs-volserver/init_vicepartitions.sh"
         ],
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     file{"/usr/local/bin/wtf_am_i_hosting.sh":
         source  => "puppet:///afs-volserver/wtf_am_i_hosting.sh",
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     file{"/usr/local/bin/update_afs_stats.sh":
         source  => "puppet:///afs-volserver/update_afs_stats.sh",
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     file{"/usr/local/bin/show_salvage_status.sh":
         source  => "puppet:///afs-volserver/show_salvage_status.sh",
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     file{"/var/lib/amanda/.amandahosts":
         source  => "puppet:///afs-volserver/amandahosts",
-        owner   => ambackup, group  => disk, mode   => 600,
+        owner   => ambackup, group  => disk, mode   => 0600,
         require => [ Package["amanda-client"], User["ambackup"] ]
 
     }
 
     file{"/etc/logrotate.d/afs-stats":
         source  => "puppet:///afs-volserver/afs-stats.logrotate",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
     }
 
     file{"/etc/xinetd.d/amanda":
         source  => "puppet:///afs-volserver/xinetd-amanda",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => [Package["amanda-client"], Package["xinetd"], Package["amanda-afs"]],
         notify  => Service["xinetd"]
     }
@@ -298,48 +308,48 @@ class afs::db-server {
 
     file{["/var/openafs"]:
         ensure  => directory,
-        owner   => root, group  => root, mode   => 700
+        owner   => root, group  => root, mode   => 0700
     }
 
     file{["/var/openafs/logs", "/var/openafs/db"]:
         ensure  => directory,
-        owner   => root, group  => root, mode   => 775,
+        owner   => root, group  => root, mode   => 0775,
         require => File["/var/openafs"]
     }
 
     file{"/etc/sysconfig/afs":
         source  => "puppet:///afs-dbserver/afs-sysconfig",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/BosConfig":
         source  => "puppet:///afs-dbserver/BosConfig",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/License":
         source  => "puppet:///afs-dbserver/BosConfig",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/ThisCell":
         source  => "puppet:///afs-dbserver/ThisCell",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/server":
         ensure  => directory,
-        owner   => root, group  => root, mode   => 755,
+        owner   => root, group  => root, mode   => 0755,
         require => Package["openafs-client"]
     }
 
     file{"/etc/openafs/server/UserList":
         source  => "puppet:///afs-dbserver/UserList",
-        owner   => root, group  => root, mode   => 644,
+        owner   => root, group  => root, mode   => 0644,
         require => File["/etc/openafs/server"]
     }
 
@@ -357,7 +367,7 @@ class afs::db-server {
         ## Do some stuff with the key here, chicken, meet egg
         file{"/etc/openafs/server/KeyFile":
             source  => "puppet:///afs-dbserver/KeyFile",
-            owner   => root, group  => root, mode   => 600,
+            owner   => root, group  => root, mode   => 0600,
             require => File["/etc/openafs/server"]
         }
 
@@ -384,7 +394,7 @@ class afs::client::authoritative inherits afs::client {
     file{"afs-krb5key":
         path    => "/etc/openafs/server/KeyFile",
         source  => "puppet://$servername/private_files/KeyFile",
-        owner   => root, group  => root, mode   => 600,
+        owner   => root, group  => root, mode   => 0600,
         require => File["/etc/openafs/server"]
     }
 
@@ -395,7 +405,7 @@ class afs::client::authoritative inherits afs::client {
 	file { "/etc/openafs/server/CellServDB":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => 0644,
 		content => template("afs/cellservdb.erb"),
         require => File["/etc/openafs/server"]
 	}
@@ -403,7 +413,7 @@ class afs::client::authoritative inherits afs::client {
 	file { "/etc/openafs/server/ThisCell":
 		owner   => root,
 		group   => root,
-		mode    => 644,
+		mode    => 0644,
 		content => "cern.ch",
         require => File["/etc/openafs/server"]
 		}
